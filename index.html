@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>LocalStorage</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <h2>Создай Свою Пиццу!</h2>
+    <p></p>
+    <ul class="items-list">
+      <li>Загружаю ингредиенты...</li>
+    </ul>
+    <form class="add-items-form">
+      <input type="text" name="item" placeholder="Название..." autocomplete="off" required>
+      <input type="submit" value="+ Добавить ингредиент">
+    </form>
+  </div>
+
+  <script>
+    
+    const addItemsForm = document.querySelector('.add-items-form') // переменная формы 
+    const itemsList = document.querySelector('.items-list') // переменная списка
+    const items = JSON.parse(localStorage.getItem('items')) || [] // сюда складываем инградиенты
+
+    function addItem(event){
+      event.preventDefault()//отменили перезагрузку страницы при изменении формы
+      const text = event.target.item.value// переменная с велью инпута
+      const item = {
+        text,
+        checked: false
+      }// пользователь ввел отдельный инградиент и мы его ложем в обект а обект пушим в масив в котором будут собератся все инградиенты 
+      localStorage.setItem('items', JSON.stringify(items))
+      items.push(item)
+
+      displayItems(items, itemsList);// в функцыю передаем параметрами масив с инградиентами и переменную со списком
+      this.reset()// перезагружаем форму после добавления инградиента в масив
+    }
+
+    function displayItems(ingradients, ingradientList){// ета функцыя принимает масив и список и в список записывает промапаные инградиенты
+        console.log(ingradients, ingradientList);
+        ingradientList.innerHTML = ingradients.map((ingredient, index)=>{
+          return `<li><input type='checkbox' id='item${index}' data-index='${index}'  ${ingredient.checked  ? 'checked' : ''}/>
+            <label for='item${index}'>${ingredient.text}</label>
+            </li>`
+        }).join('')// джоином отсекаем запятые - ?
+      }
+
+      function toggle(event){
+        if(!event.target.matches('input')) return
+        const element = event.target.dataset.index
+        items[element].checked = !items[element].checked
+      localStorage.setItem('items', JSON.stringify(items));
+
+        displayItems(items, itemsList)
+        console.log(element);
+      }
+    addItemsForm.addEventListener('submit', addItem) // на форму вешаем слушателя изменения события и имя фунуцц addItem которая слушает изменения формы
+      itemsList.addEventListener('click', toggle)
+      displayItems(items, itemsList)
+
+
+
+  </script>
+
+
+</body>
+
+</html>
